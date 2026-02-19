@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水、時間與遠方的你</title>
+    <style>
+        body, html { 
+            margin: 0; padding: 0; height: 100vh; width: 100vw;
+            font-family: "PingFang TC", "Songti TC", "Microsoft JhengHei", serif; 
+            display: flex; justify-content: center; align-items: center; 
+            background-color: #000; overflow: hidden;
+        }
+
+        /* 修正：用真實圖片標籤取代 CSS 背景，確保開頭 100% 顯示 */
+        #bg-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+        }
+        #main-bg {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: opacity 1.2s ease-in-out;
+        }
+
+        /* 極光啟動層 */
+        #start-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #001d3d 0%, #003566 25%, #00a896 50%, #02c39a 75%, #05668d 100%);
+            background-size: 400% 400%; animation: auroraBG 15s ease infinite;
+            z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff;
+            transition: opacity 0.8s ease;
+        }
+        @keyframes auroraBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* 修正：超精緻小巧按鈕 */
+        #start-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 8px 25px; font-size: 0.9em; 
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.5); 
+            color: #fff; border-radius: 40px; cursor: pointer; backdrop-filter: blur(10px); 
+            letter-spacing: 2px; transition: all 0.3s; margin-top: 20px;
+        }
+        #start-btn:hover { background: #fff; color: #003566; }
+        #start-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.25); z-index: 1; }
+
+        .container { 
+            position: relative; z-index: 10; display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+            background: rgba(255, 252, 245, 0.45); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            padding: 40px; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
+            max-width: 800px; width: 90%; border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .left-panel { flex: 0 0 140px; display: flex; flex-direction: column; align-items: center; border-right: 1px solid rgba(90, 70, 61, 0.2); padding-right: 25px; }
+        .right-panel { flex: 1; padding-left: 40px; text-align: left; }
+
+        .pitcher-container { 
+            width: 70px; height: 105px; margin-bottom: 12px; position: relative; border: 2.5px solid #5a463d; 
+            border-radius: 5px 5px 15px 15px; overflow: hidden; background: rgba(255,255,255,0.4);
+        }
+        .water-level { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, #74b9ff, #a2d5f2); transition: height 1s ease; }
+
+        .drop-btn { background: none; border: none; cursor: pointer; outline: none; transition: transform 0.2s; padding: 0; }
+        .drop-btn svg { fill: #5a463d; width: 65px; height: 65px; }
+        
+        h2 { margin: 0 0 8px 0; color: #5a463d; letter-spacing: 4px; font-size: 1.5em; }
+        .quote { min-height: 90px; margin: 10px 0; color: #2c1e16; line-height: 1.8; font-size: 1.05em; font-weight: 600; }
+        .music-info { color: #5a463d; font-size: 0.85em; text-decoration: none; font-weight: bold; border-bottom: 1px solid #5a463d; padding-bottom: 2px; display: inline-block; }
+        .reset-btn { margin-top: 30px; background: none; border: none; color: #5a463d; cursor: pointer; font-size: 0.65em; opacity: 0.5; }
+
+        @media (max-width: 700px) {
+            .container { flex-direction: column; padding: 25px; }
+            .left-panel { border-right: none; border-bottom: 1px solid rgba(90, 70, 61, 0.2); padding-right: 0; padding-bottom: 15px; }
+            .right-panel { padding-left: 0; padding-top: 20px; text-align: center; }
+        }
+        #player-wrapper { position: fixed; bottom: -100px; left: -100px; width: 1px; height: 1px; }
+    </style>
+</head>
+<body>
+
+    <div id="bg-container">
+        <img id="main-bg" src="https://images.unsplash.com/photo-1494548162494-384d6b1d85a5?auto=format&fit=crop&w=1920&q=90">
+    </div>
+
+    <div id="start-overlay">
+        <p style="letter-spacing: 3px; opacity: 0.8; font-size: 0.9em; margin-bottom: 5px;">A special gift for you</p>
+        <h1 style="letter-spacing: 6px; font-weight: 300; font-size: 1.8em; margin: 0;">水、時間與遠方的你</h1>
+        <button id="start-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+            拆開禮物，開啟旅程
+        </button>
+    </div>
+
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="left-panel">
+            <div class="pitcher-container"><div class="water-level" id="water-level"></div></div>
+            <div style="font-size: 0.9em; color: #5a463d; font-weight: bold;">今日進度：<span id="liters">0.00</span> / 2.0 L</div>
+            <button class="reset-btn" id="reset-trigger">RESET</button>
+        </div>
+        <div class="right-panel">
+            <h2>光璨的專屬水杯</h2>
+            <div class="quote" id="quote">「這世界雖然有點冷，但當水杯漸漸裝滿，希望你的心也被一點一滴溫暖❤️」</div>
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <button class="drop-btn" id="drink-btn"><svg viewBox="0 0 30 42"><path d="M15 3 Q15 3 25 18 A10 10 0 1 1 5 18 Q15 3 15 3z" /></svg></button>
+                <a id="youtube-link" class="music-info" target="_blank" href="#">— 聽見遠方的旋律 —</a>
+            </div>
+        </div>
+    </div>
+    
+    <div id="player-wrapper"><div id="player"></div></div>
+
+    <script>
+        const stepsData = [
+            { img: "1494548162494-384d6b1d85a5", txt: "「這世界雖然有點冷，但當水杯漸漸裝滿，希望你的心也被一點一滴溫暖❤️」", song: "♫ Schubert: Serenade", yt: "0bjB-IWEYW0" },
+            { img: "1470770841072-f978cf4d019e", txt: "「光璨早安，早晨的空氣裡總有一種特殊的安靜，像苒苒朝陽。在那份靜謐消失前，先喝杯水吧。」", song: "♫ Grieg: Peer Gynt", yt: "pgRrY1d-O7A" },
+            { img: "1506744038136-46273834b3fb", txt: "「時間像雨滴一樣，落在窗櫺，也落在心頭。我們接不住所有的雨，但可以讓此刻的身體重新定位。」", song: "♫ Chopin: Preludes", yt: "QkodzAsgo6o" },
+            { img: "1441974231531-c6227db76b6e", txt: "「有時候，慢下來也是一種前進。在馬勒的旋律裡，試著把視線從紛擾中移開，投向遠方最安靜的一角。」", song: "♫ Mahler: Symphony No. 5", yt: "mVjHOp2SFfU" },
+            { img: "1501785888041-af3ef285b470", txt: "「克里夫蘭的風或許有點涼，但手心裡的杯子要有溫度。這兩者之間的平衡，就是生活的樣子。」", song: "♫ Grieg: Lyric Pieces", yt: "NryAaJDbvDM" },
+            { img: "1447752875215-b2761acb3c5d", txt: "「重複的練習有時是孤獨的，卻也是通往溫暖的必經之路。這是我最近在努力的曲子，聽之前先起身動一動吧。」", song: "♫ Chopin: Etudes", yt: "g0hoN6_HDVU" },
+            { img: "1472214103451-9374bd1c798e", txt: "「大提琴的聲音低沉而厚實，聽起來像長輩在深夜裡的叮嚀。我相信你可以做到的。」", song: "♫ Rachmaninoff: Cello Works", yt: "Bti-pybbAF8" },
+            { img: "1500382017468-9049fed747ef", txt: "「再喝杯水，順便起身走走吧，看看窗外的景色，應該差不多日落了呢。」", song: "♫ Saint-Saëns: Cello Sonatas", yt: "h9L_PFhNFYo" },
+            { img: "1519681393784-d120267933ba", txt: "「最後一杯水了，恭喜你今天達標啦！就把剩下的執著輕輕放下，明天再繼續想吧。」", song: "♫ Chopin: Nocturnes", yt: "kHXxWfSAxik" },
+            { img: "1577069869991-1f764d600404", txt: "今天辛苦啦，如果有餘力也可以簡單傳個訊息給愛你的人們，讓他們知道你今天過得如何~~如果剛好也有我的話，會很開心的，你的簡單一句話都能點亮我一整天的心情✨", song: "— 晚安，祝你有個好夢❤️ —", yt: "798HhY_6Lwg" }
+        ];
+
+        let currentStep = 0;
+        let player;
+        let isApiReady = false;
+
+        // 核心修正：手動載入 YouTube API 並確保點擊觸發
+        function loadYT() {
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            document.body.appendChild(tag);
+        }
+
+        window.onYouTubeIframeAPIReady = function() {
+            player = new YT.Player('player', {
+                height: '1', width: '1',
+                playerVars: { 'autoplay': 1, 'controls': 0, 'enablejsapi': 1 },
+                events: { 
+                    'onReady': (e) => { 
+                        isApiReady = true; 
+                        // 在 Start 點下後，這會被呼叫來播第一首
+                        if (currentStep === 0) e.target.playVideo();
+                    } 
+                }
+            });
+        };
+
+        function syncUI() {
+            const data = stepsData[currentStep];
+            // 更新圖片
+            const imgElement = document.getElementById('main-bg');
+            imgElement.style.opacity = 0;
+            setTimeout(() => {
+                imgElement.src = `https://images.unsplash.com/photo-${data.img}?auto=format&fit=crop&w=1920&q=90`;
+                imgElement.style.opacity = 1;
+            }, 300);
+            
+            // 更新文字
+            document.getElementById('quote').innerText = data.txt;
+            document.getElementById('youtube-link').innerText = data.song;
+            
+            // 更新進度
+            let p = (currentStep >= 9) ? 8 : (currentStep > 0 ? currentStep : 0);
+            document.getElementById('water-level').style.height = (p * 12.5) + "%";
+            document.getElementById('liters').innerText = (p * 0.25).toFixed(2);
+        }
+
+        // 啟動點擊：這是解鎖一切的鑰匙
+        document.getElementById('start-btn').addEventListener('click', function() {
+            document.getElementById('start-overlay').style.opacity = '0';
+            setTimeout(() => { 
+                document.getElementById('start-overlay').style.display = 'none'; 
+            }, 800);
+            
+            // 點擊瞬間加載音樂與第一首歌
+            loadYT();
+            syncUI();
+        });
+
+        document.getElementById('drink-btn').addEventListener('click', () => {
+            if (currentStep < 9) {
+                currentStep++;
+                const data = stepsData[currentStep];
+                if (isApiReady && data.yt) {
+                    player.loadVideoById(data.yt);
+                    player.playVideo();
+                } else if (isApiReady) {
+                    player.stopVideo();
+                }
+                syncUI();
+            }
+        });
+
+        document.getElementById('reset-trigger').addEventListener('click', () => {
+            location.reload(); 
+        });
+    </script>
+</body>
+</html>
