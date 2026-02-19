@@ -21,6 +21,8 @@
             opacity: 0;
             transition: opacity 1.2s ease-in-out;
         }
+        /* 修正：如果圖片破圖，不要顯示那個醜醜的圖示 */
+        img:not([src]), img[src=""] { opacity: 0 !important; }
 
         #start-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -33,14 +35,14 @@
 
         #start-btn {
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            padding: 12px 35px; font-size: 1em; 
+            padding: 12px 35px; font-size: 1.1em; 
             background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255,255,255,0.5); 
             color: #fff; border-radius: 40px; cursor: pointer; backdrop-filter: blur(10px); 
             letter-spacing: 2px; transition: all 0.3s; margin-top: 20px;
         }
         #start-btn:hover { background: #fff; color: #003566; transform: scale(1.05); }
 
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.25); z-index: 1; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); z-index: 1; }
 
         .container { 
             position: relative; z-index: 10; display: flex; flex-direction: row; align-items: center; justify-content: space-between;
@@ -117,7 +119,8 @@
 
     <script>
         const stepsData = [
-            { img: "1494548162494-384d6b1d85a5", txt: "「這世界雖然有點冷，但當水杯漸漸裝滿，希望你的心也被一點一滴溫暖❤️」", song: "♫ Schubert: Ave Maria", yt: "widDAQKdlUA" },
+            // 第一張圖換了一個更穩定的 ID
+            { img: "1475113548176-624e71573228", txt: "「這世界雖然有點冷，但當水杯漸漸裝滿，希望你的心也被一點一滴溫暖❤️」", song: "♫ Schubert: Ave Maria", yt: "widDAQKdlUA" },
             { img: "1470770841072-f978cf4d019e", txt: "「光璨早安，早晨的空氣裡總有一種特殊的安靜，像苒苒朝陽。在那份靜謐消失前，先喝杯水吧。」", song: "♫ Grieg: Peer Gynt", yt: "pgRrY1d-O7A" },
             { img: "1506744038136-46273834b3fb", txt: "「時間像雨滴一樣，落在窗櫺，也落在心頭。我們接不住所有的雨，但可以讓此刻的身體重新定位。」", song: "♫ Chopin: Preludes", yt: "QkodzAsgo6o" },
             { img: "1441974231531-c6227db76b6e", txt: "「有時候，慢下來是一種前進。在馬勒的旋律裡，試著把視線從紛擾中移開，投向遠方最安靜的一角。」", song: "♫ Mahler: Symphony No. 5", yt: "mVjHOp2SFfU" },
@@ -142,7 +145,14 @@
                 height: '1', width: '1',
                 host: 'https://www.youtube-nocookie.com',
                 videoId: stepsData[0].yt,
-                playerVars: { 'autoplay': 0, 'controls': 0, 'enablejsapi': 1, 'playsinline': 1 },
+                playerVars: { 
+                    'autoplay': 0, 
+                    'controls': 0, 
+                    'enablejsapi': 1, 
+                    'playsinline': 1,
+                    'iv_load_policy': 3,
+                    'modestbranding': 1
+                },
                 events: { 'onReady': () => { isApiReady = true; } }
             });
         };
@@ -151,12 +161,12 @@
             const data = stepsData[currentStep];
             const imgElement = document.getElementById('main-bg');
             
-            // 完全套用後面的淡入淡出邏輯
+            // 統一所有圖片的淡入淡出邏輯
             imgElement.style.opacity = 0;
             setTimeout(() => {
                 imgElement.src = `https://images.unsplash.com/photo-${data.img}?auto=format&fit=crop&w=1920&q=90`;
-                imgElement.style.opacity = 1;
-            }, 400);
+                imgElement.onload = () => { imgElement.style.opacity = 1; };
+            }, 300);
             
             document.getElementById('quote').innerText = data.txt;
             document.getElementById('youtube-link').innerText = data.song;
@@ -171,21 +181,23 @@
             document.getElementById('start-overlay').style.opacity = '0';
             setTimeout(() => { document.getElementById('start-overlay').style.display = 'none'; }, 800);
             
-            // 點擊後由 JS 刷入第一張圖（跟後面邏輯一樣）
             syncUI();
 
-            if (isApiReady && player) {
-                player.loadVideoById(stepsData[0].yt);
-                player.playVideo();
-            } else {
-                let checkReady = setInterval(() => {
-                    if (isApiReady && player) {
-                        player.loadVideoById(stepsData[0].yt);
-                        player.playVideo();
-                        clearInterval(checkReady);
-                    }
-                }, 500);
-            }
+            // 修正：稍微延遲一點點再播，給 API 反應時間
+            setTimeout(() => {
+                if (isApiReady && player) {
+                    player.loadVideoById(stepsData[0].yt);
+                    player.playVideo();
+                } else {
+                    let checkReady = setInterval(() => {
+                        if (isApiReady && player) {
+                            player.loadVideoById(stepsData[0].yt);
+                            player.playVideo();
+                            clearInterval(checkReady);
+                        }
+                    }, 500);
+                }
+            }, 100);
         });
 
         document.getElementById('drink-btn').addEventListener('click', () => {
