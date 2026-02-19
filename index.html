@@ -12,7 +12,6 @@
             background-color: #000; overflow: hidden;
         }
 
-        /* 終極修正：將 img 換成 div 背景，徹底消滅破碎圖示 */
         #bg-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
             background-color: #000;
@@ -60,7 +59,6 @@
             border-radius: 5px 5px 15px 15px; overflow: hidden; background: rgba(255,255,255,0.4);
         }
         .water-level { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, #74b9ff, #a2d5f2); transition: height 1s ease; }
-
         .progress-text { 
             font-size: 0.85em; color: #5a463d; font-weight: bold; 
             text-align: center; line-height: 1.6; letter-spacing: 1px;
@@ -85,7 +83,6 @@
     </style>
 </head>
 <body>
-
     <div id="bg-container">
         <div id="main-bg"></div>
     </div>
@@ -129,7 +126,7 @@
             { img: "1472214103451-9374bd1c798e", txt: "「大提琴的聲音低沉而厚實，聽起來像長輩在深夜裡的叮嚀。我相信你可以做到的。」", song: "♫ Rachmaninoff: Cello Works", yt: "Bti-pybbAF8" },
             { img: "1500382017468-9049fed747ef", txt: "「再喝杯水，順便起身走走吧，看看窗外的景色，應該差不多日落了呢。」", song: "♫ Saint-Saëns: Cello Sonatas", yt: "h9L_PFhNFYo" },
             { img: "1519681393784-d120267933ba", txt: "「最後一杯水了，恭喜你今天達標啦！就把剩下的執著輕輕放下，明天再繼續想吧。」", song: "♫ Chopin: Nocturnes", yt: "kHXxWfSAxik" },
-            { img: "1577069869991-1f764d600404", txt: "今天辛苦啦，如果有餘力也可以簡單傳個訊息給愛你的人們，讓他們知道你今天過得如何~~如果剛好也有我的話，會很開心的❤️", song: "— 晚安，祝你有個好夢❤️ —", yt: "798HhY_6Lwg" }
+            { img: "1577069869991-1f764d600404", txt: "今天辛苦啦，如果有餘力也可以簡單傳個訊息給愛你的人們，讓他們知道你今天過得如何~~如果剛好也有我的話，會很開心的，你的簡單一句話都能點亮我一整天的心情✨", song: "", yt: "aDSf3QoK3uQ" }
         ];
 
         let currentStep = 0;
@@ -158,13 +155,9 @@
         function syncUI() {
             const data = stepsData[currentStep];
             const bgElement = document.getElementById('main-bg');
-            
-            // 修正：使用 backgroundImage 載入，並在載入期間保持透明
             const imgUrl = `https://images.unsplash.com/photo-${data.img}?auto=format&fit=crop&w=1920&q=90`;
             
             bgElement.style.opacity = 0;
-            
-            // 預載入圖片，完成後才淡入
             const tempImg = new Image();
             tempImg.src = imgUrl;
             tempImg.onload = () => {
@@ -173,7 +166,8 @@
             };
             
             document.getElementById('quote').innerText = data.txt;
-            document.getElementById('youtube-link').innerText = data.song;
+            // 修正：只有最後一頁不顯示曲名，顯示預設占位符
+            document.getElementById('youtube-link').innerText = data.song || "— 聽見遠方的旋律 —";
             document.getElementById('youtube-link').href = `https://www.youtube.com/watch?v=${data.yt}`;
             
             let p = (currentStep >= 9) ? 8 : currentStep;
@@ -187,7 +181,6 @@
             
             syncUI();
 
-            // 音樂播放雙重保險
             setTimeout(() => {
                 if (isApiReady && player) {
                     player.loadVideoById(stepsData[0].yt);
