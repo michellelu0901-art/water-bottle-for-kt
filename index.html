@@ -14,9 +14,11 @@
 
         #bg-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            background-color: #000;
         }
         #main-bg {
             width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; /* 初始隱藏，由 JS 控制顯示 */
             transition: opacity 1.2s ease-in-out;
         }
 
@@ -30,8 +32,8 @@
         @keyframes auroraBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         #start-btn {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 12px 35px; font-size: 0.95em; 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 12px 35px; font-size: 1em; 
             background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255,255,255,0.5); 
             color: #fff; border-radius: 40px; cursor: pointer; backdrop-filter: blur(10px); 
             letter-spacing: 2px; transition: all 0.3s; margin-top: 20px;
@@ -56,18 +58,19 @@
         }
         .water-level { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, #74b9ff, #a2d5f2); transition: height 1s ease; }
 
+        /* 換行優化 */
         .progress-text { 
             font-size: 0.85em; color: #5a463d; font-weight: bold; 
             text-align: center; line-height: 1.6; letter-spacing: 1px;
         }
-        .progress-val { font-size: 1.2em; display: block; margin-top: 4px; }
+        .progress-val { font-size: 1.15em; display: block; margin-top: 5px; white-space: nowrap; }
 
         .drop-btn { background: none; border: none; cursor: pointer; outline: none; transition: transform 0.2s; padding: 0; }
         .drop-btn:active { transform: scale(0.9); }
         .drop-btn svg { fill: #5a463d; width: 65px; height: 65px; }
         
         h2 { margin: 0 0 8px 0; color: #5a463d; letter-spacing: 4px; font-size: 1.5em; }
-        .quote { min-height: 90px; margin: 10px 0; color: #2c1e16; line-height: 1.8; font-size: 1.05em; font-weight: 600; }
+        .quote { min-height: 95px; margin: 10px 0; color: #2c1e16; line-height: 1.8; font-size: 1.05em; font-weight: 600; }
         .music-info { color: #5a463d; font-size: 0.85em; font-weight: bold; border-bottom: 1px solid #5a463d; padding-bottom: 2px; display: inline-block; text-decoration: none; }
         .reset-btn { margin-top: 30px; background: none; border: none; color: #5a463d; cursor: pointer; font-size: 0.65em; opacity: 0.5; }
 
@@ -76,13 +79,13 @@
             .left-panel { border-right: none; border-bottom: 1px solid rgba(90, 70, 61, 0.2); padding-right: 0; padding-bottom: 15px; }
             .right-panel { padding-left: 0; padding-top: 20px; text-align: center; }
         }
-        #player-wrapper { position: fixed; bottom: -100px; left: -100px; width: 1px; height: 1px; }
+        #player-wrapper { position: fixed; bottom: -100px; left: -100px; width: 1px; height: 1px; pointer-events: none; }
     </style>
 </head>
 <body>
 
     <div id="bg-container">
-        <img id="main-bg" src="https://images.unsplash.com/photo-1494548162494-384d6b1d85a5?auto=format&fit=crop&w=1920&q=90">
+        <img id="main-bg" src="">
     </div>
 
     <div id="start-overlay">
@@ -131,6 +134,7 @@
         let player;
         let isApiReady = false;
 
+        // 加載 YouTube API
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         document.body.appendChild(tag);
@@ -140,25 +144,33 @@
                 height: '1', width: '1',
                 host: 'https://www.youtube-nocookie.com',
                 videoId: stepsData[0].yt,
-                playerVars: { 'autoplay': 0, 'controls': 0, 'enablejsapi': 1, 'origin': window.location.origin },
-                events: { 'onReady': () => { isApiReady = true; } }
+                playerVars: { 
+                    'autoplay': 0, 
+                    'controls': 0, 
+                    'enablejsapi': 1,
+                    'playsinline': 1 
+                },
+                events: { 
+                    'onReady': () => { isApiReady = true; } 
+                }
             });
         };
 
-        function syncUI() {
+        function syncUI(isInitial = false) {
             const data = stepsData[currentStep];
             const imgElement = document.getElementById('main-bg');
             
-            // 首頁圖直接顯示，避免閃爍
-            if (currentStep === 0) {
+            if (isInitial) {
+                // 第一張圖直接顯示，不使用淡入淡出，保證圖片存在
                 imgElement.src = `https://images.unsplash.com/photo-${data.img}?auto=format&fit=crop&w=1920&q=90`;
-                imgElement.style.opacity = 1;
+                imgElement.onload = () => { imgElement.style.opacity = 1; };
             } else {
+                // 後續圖才切換淡入淡出
                 imgElement.style.opacity = 0;
                 setTimeout(() => {
                     imgElement.src = `https://images.unsplash.com/photo-${data.img}?auto=format&fit=crop&w=1920&q=90`;
                     imgElement.style.opacity = 1;
-                }, 300);
+                }, 400);
             }
             
             document.getElementById('quote').innerText = data.txt;
@@ -172,9 +184,25 @@
 
         document.getElementById('start-btn').addEventListener('click', function() {
             document.getElementById('start-overlay').style.opacity = '0';
-            setTimeout(() => { document.getElementById('start-overlay').style.display = 'none'; }, 800);
-            if (isApiReady && player) player.playVideo();
-            syncUI();
+            setTimeout(() => { 
+                document.getElementById('start-overlay').style.display = 'none'; 
+            }, 800);
+
+            // 同步顯示首頁內容
+            syncUI(true);
+
+            // 啟動音樂
+            if (isApiReady && player) {
+                player.playVideo();
+            } else {
+                // 如果 API 還沒準備好，等它 Ready 後自動播
+                let checkReady = setInterval(() => {
+                    if (isApiReady && player) {
+                        player.playVideo();
+                        clearInterval(checkReady);
+                    }
+                }, 500);
+            }
         });
 
         document.getElementById('drink-btn').addEventListener('click', () => {
@@ -189,7 +217,9 @@
             }
         });
 
-        document.getElementById('reset-trigger').addEventListener('click', () => { location.reload(); });
+        document.getElementById('reset-trigger').addEventListener('click', () => {
+            location.reload(); 
+        });
     </script>
 </body>
 </html>
