@@ -18,7 +18,7 @@
         }
         #main-bg {
             width: 100%; height: 100%; object-fit: cover;
-            opacity: 1; /* 修正：初始就設為 1，讓預載圖片直接顯示 */
+            opacity: 0;
             transition: opacity 1.2s ease-in-out;
         }
 
@@ -84,7 +84,7 @@
 <body>
 
     <div id="bg-container">
-        <img id="main-bg" src="https://images.unsplash.com/photo-1494548162494-384d6b1d85a5?auto=format&fit=crop&w=1920&q=90">
+        <img id="main-bg" src="">
     </div>
 
     <div id="start-overlay">
@@ -105,7 +105,7 @@
         </div>
         <div class="right-panel">
             <h2>光璨的專屬水杯</h2>
-            <div class="quote" id="quote">載入中...</div>
+            <div class="quote" id="quote">「這世界雖然有點冷，但當水杯漸漸裝滿，希望你的心也被一點一滴溫暖❤️」</div>
             <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
                 <button class="drop-btn" id="drink-btn"><svg viewBox="0 0 30 42"><path d="M15 3 Q15 3 25 18 A10 10 0 1 1 5 18 Q15 3 15 3z" /></svg></button>
                 <a id="youtube-link" class="music-info" target="_blank" href="#">— 聽見遠方的旋律 —</a>
@@ -117,10 +117,10 @@
 
     <script>
         const stepsData = [
-            { img: "1494548162494-384d6b1d85a5", txt: "「這世界雖然有點冷，但當水杯漸漸裝滿，希望你的心也被一點一滴溫暖❤️」", song: "♫ Schubert: Serenade", yt: "0bjB-IWEYW0" },
+            { img: "1494548162494-384d6b1d85a5", txt: "「這世界雖然有點冷，但當水杯漸漸裝滿，希望你的心也被一點一滴溫暖❤️」", song: "♫ Schubert: Ave Maria", yt: "widDAQKdlUA" },
             { img: "1470770841072-f978cf4d019e", txt: "「光璨早安，早晨的空氣裡總有一種特殊的安靜，像苒苒朝陽。在那份靜謐消失前，先喝杯水吧。」", song: "♫ Grieg: Peer Gynt", yt: "pgRrY1d-O7A" },
             { img: "1506744038136-46273834b3fb", txt: "「時間像雨滴一樣，落在窗櫺，也落在心頭。我們接不住所有的雨，但可以讓此刻的身體重新定位。」", song: "♫ Chopin: Preludes", yt: "QkodzAsgo6o" },
-            { img: "1441974231531-c6227db76b6e", txt: "「有時候，慢下來也是一種前進。在馬勒的旋律裡，試著把視線從紛擾中移開，投向遠方最安靜的一角。」", song: "♫ Mahler: Symphony No. 5", yt: "mVjHOp2SFfU" },
+            { img: "1441974231531-c6227db76b6e", txt: "「有時候，慢下來是一種前進。在馬勒的旋律裡，試著把視線從紛擾中移開，投向遠方最安靜的一角。」", song: "♫ Mahler: Symphony No. 5", yt: "mVjHOp2SFfU" },
             { img: "1501785888041-af3ef285b470", txt: "「克里夫蘭的風或許有點涼，但手心裡的杯子要有溫度。這兩者之間的平衡，就是生活的樣子。」", song: "♫ Grieg: Lyric Pieces", yt: "NryAaJDbvDM" },
             { img: "1447752875215-b2761acb3c5d", txt: "「重複的練習有時是孤獨的，卻也是通往溫暖的必經之路。這是我最近在努力的曲子，聽之前先起身動一動吧。」", song: "♫ Chopin: Etudes", yt: "g0hoN6_HDVU" },
             { img: "1472214103451-9374bd1c798e", txt: "「大提琴的聲音低沉而厚實，聽起來像長輩在深夜裡的叮嚀。我相信你可以做到的。」", song: "♫ Rachmaninoff: Cello Works", yt: "Bti-pybbAF8" },
@@ -151,16 +151,12 @@
             const data = stepsData[currentStep];
             const imgElement = document.getElementById('main-bg');
             
-            // 非第一步才執行淡入淡出，第一步直接換網址
-            if (currentStep !== 0) {
-                imgElement.style.opacity = 0;
-                setTimeout(() => {
-                    imgElement.src = `https://images.unsplash.com/photo-${data.img}?auto=format&fit=crop&w=1920&q=90`;
-                    imgElement.style.opacity = 1;
-                }, 400);
-            } else {
+            // 完全套用後面的淡入淡出邏輯
+            imgElement.style.opacity = 0;
+            setTimeout(() => {
                 imgElement.src = `https://images.unsplash.com/photo-${data.img}?auto=format&fit=crop&w=1920&q=90`;
-            }
+                imgElement.style.opacity = 1;
+            }, 400);
             
             document.getElementById('quote').innerText = data.txt;
             document.getElementById('youtube-link').innerText = data.song;
@@ -175,14 +171,16 @@
             document.getElementById('start-overlay').style.opacity = '0';
             setTimeout(() => { document.getElementById('start-overlay').style.display = 'none'; }, 800);
             
-            // 執行第一次 UI 同步
+            // 點擊後由 JS 刷入第一張圖（跟後面邏輯一樣）
             syncUI();
 
             if (isApiReady && player) {
+                player.loadVideoById(stepsData[0].yt);
                 player.playVideo();
             } else {
                 let checkReady = setInterval(() => {
                     if (isApiReady && player) {
+                        player.loadVideoById(stepsData[0].yt);
                         player.playVideo();
                         clearInterval(checkReady);
                     }
