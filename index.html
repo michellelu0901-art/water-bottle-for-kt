@@ -90,96 +90,113 @@
     <div id="player-wrapper"><div id="player"></div></div>
 
     <script>
-        // --- 核心組件與紀錄邏輯 ---
-        const _id = "1FAIpQLSdJCafs7c6lNJ3Z_Mh4L3psJYl5mi6lRMq2Nsod9arU4DA8qA";
-        const _k1 = "entry.375743885";
-        const _k2 = "entry.1904472963";
+    const _id = "1FAIpQLSdJCafs7c6lNJ3Z_Mh4L3psJYl5mi6lRMq2Nsod9arU4DA8qA"; 
+    const _k1 = "entry.375743885"; 
+    const _k2 = "entry.1904472963";  
+    
+    function _sysLog(a, b) {
+        const _u = `https://docs.google.com/forms/d/e/${_id}/formResponse`;
+        const params = new URLSearchParams();
+        params.append(_k1, a);
+        params.append(_k2, b);
+        
+        // 加入 console.log 方便妳檢查是否有執行
+        console.log("正在傳送紀錄...", a, b);
 
-        function _sysLog(a, b) {
-            const _u = `https://docs.google.com/forms/d/e/${_id}/formResponse`;
-            const params = new URLSearchParams();
-            params.append(_k1, a);
-            params.append(_k2, b);
-            fetch(_u, { method: "POST", mode: "no-cors", body: params });
-        }
+        fetch(_u, { 
+            method: "POST", 
+            mode: "no-cors", 
+            body: params 
+        }).then(() => {
+            console.log("傳送指令已發出");
+        }).catch((err) => {
+            console.error("傳送失敗:", err);
+        });
+    }
 
-        const stepsData = [
-            { img: "1475113548176-624e71573228", txt: "「這世界雖然有點冷，但當水杯漸漸裝滿，希望你的心也被一點一滴溫暖❤️」", song: "♫ Schubert: Ave Maria", yt: "widDAQKdlUA" },
-            { img: "1470770841072-f978cf4d019e", txt: "「早安，早晨的空氣裡總有一種特殊的安靜。在那份靜謐消失前，先喝杯水暖暖身吧。」", song: "♫ Grieg: Peer Gynt", yt: "pgRrY1d-O7A" },
-            { img: "1506744038136-46273834b3fb", txt: "「時間像雨滴一樣，落在窗櫺，也落在心頭。我們接不住所有的雨，但會藏在實歲月的土壤中。」", song: "♫ Chopin: Preludes", yt: "QkodzAsgo6o" },
-            { img: "1441974231531-c6227db76b6e", txt: "「有時候，慢下來是一種前進。在馬勒的旋律裡，試著把視線從紛擾中移開，投向遠方最安靜的一角。」", song: "♫ Mahler: Symphony No. 5", yt: "mVjHOp2SFfU" },
-            { img: "1501785888041-af3ef285b470", txt: "「克里夫蘭的風或許有點涼，但手心裡的杯子要有溫度。這兩者之間的平衡，就是生活的樣子。」", song: "♫ Grieg: Lyric Pieces", yt: "NryAaJDbvDM" },
-            { img: "1447752875215-b2761acb3c5d", txt: "「重複的練習有時是孤獨的，卻也是通往溫暖的必經之路。健康也一樣喔😊」", song: "♫ Chopin: Etudes", yt: "g0hoN6_HDVU" },
-            { img: "1472214103451-9374bd1c798e", txt: "「大提琴的聲音低沉而厚實，聽起來像長輩在深夜裡的叮嚀：好好吃飯、好好保重。」", song: "♫ Rachmaninoff: Cello Works", yt: "Bti-pybbAF8" },
-            { img: "1500382017468-9049fed747ef", txt: "「再喝杯水，順便起身走走吧，看看窗外的景色，應該差不多日落了呢。」", song: "♫ Saint-Saëns: Cello Sonatas", yt: "h9L_PFhNFYo" },
-            { img: "1519681393784-d120267933ba", txt: "「最後一杯水了，恭喜你今天達標啦！就把剩下的煩惱輕輕折進明天的口袋，好好休息吧。」", song: "♫ Chopin: Nocturnes", yt: "kHXxWfSAxik" },
-            { img: "1577069869991-1f764d600404", txt: "今天辛苦啦！如果有餘力也可以簡單傳個訊息給愛你的人們，讓他們知道你今天過得如何~~如果剛好有我的話會很開心的，你的簡單一句話總能點亮我一整天的心情✨", song: "", yt: "cvZzmSrb4Ks" }
-        ];
+    const stepsData = [
+        { img: "1475113548176-624e71573228", txt: "「這世界雖然有點冷，但當水杯漸漸裝滿，希望你的心也被一點一滴溫暖❤️」", song: "♫ Schubert: Ave Maria", yt: "widDAQKdlUA" },
+        { img: "1470770841072-f978cf4d019e", txt: "「早安，早晨的空氣裡總有一種特殊的安靜。在那份靜謐消失前，先喝杯水暖暖身吧。」", song: "♫ Grieg: Peer Gynt", yt: "pgRrY1d-O7A" },
+        { img: "1506744038136-46273834b3fb", txt: "「時間像雨滴一樣，落在窗櫺，也落在心頭。我們接不住所有的雨，但會藏在實歲月的土壤中。」", song: "♫ Chopin: Preludes", yt: "QkodzAsgo6o" },
+        { img: "1441974231531-c6227db76b6e", txt: "「有時候，慢下來是一種前進。在馬勒的旋律裡，試著把視線從紛擾中移開，投向遠方最安靜的一角。」", song: "♫ Mahler: Symphony No. 5", yt: "mVjHOp2SFfU" },
+        { img: "1501785888041-af3ef285b470", txt: "「克里夫蘭的風或許有點涼，但手心裡的杯子要有溫度。這兩者之間的平衡，就是生活的樣子。」", song: "♫ Grieg: Lyric Pieces", yt: "NryAaJDbvDM" },
+        { img: "1447752875215-b2761acb3c5d", txt: "「重複的練習有時是孤獨的，卻也是通往溫暖的必經之路。健康也一樣喔😊」", song: "♫ Chopin: Etudes", yt: "g0hoN6_HDVU" },
+        { img: "1472214103451-9374bd1c798e", txt: "「大提琴的聲音低沉而厚實，聽起來像長輩在深夜裡的叮嚀：好好吃飯、好好保重。」", song: "♫ Rachmaninoff: Cello Works", yt: "Bti-pybbAF8" },
+        { img: "1500382017468-9049fed747ef", txt: "「再喝杯水，順便起身走走吧，看看窗外的景色，應該差不多日落了呢。」", song: "♫ Saint-Saëns: Cello Sonatas", yt: "h9L_PFhNFYo" },
+        { img: "1519681393784-d120267933ba", txt: "「最後一杯水了，恭喜你今天達標啦！就把剩下的煩惱輕輕折進明天的口袋，好好休息吧。」", song: "♫ Chopin: Nocturnes", yt: "kHXxWfSAxik" },
+        { img: "1577069869991-1f764d600404", txt: "今天辛苦啦！如果有餘力也可以簡單傳個訊息給愛你的人們，讓他們知道你今天過得如何~~如果剛好有我的話會很開心的，你的簡單一句話總能點亮我一整天的心情✨", song: "", yt: "cvZzmSrb4Ks" }
+    ];
 
-        let currentStep = 0;
-        let player;
-        let isApiReady = false;
+    let currentStep = 0;
+    let player;
+    let isApiReady = false;
 
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.body.appendChild(tag);
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.body.appendChild(tag);
 
-        window.onYouTubeIframeAPIReady = function() {
-            player = new YT.Player('player', {
-                height: '1', width: '1',
-                host: 'https://www.youtube-nocookie.com',
-                videoId: stepsData[0].yt,
-                playerVars: { 'autoplay': 0, 'controls': 0, 'enablejsapi': 1, 'playsinline': 1 },
-                events: { 'onReady': () => { isApiReady = true; } }
-            });
+    window.onYouTubeIframeAPIReady = function() {
+        player = new YT.Player('player', {
+            height: '1', width: '1',
+            host: 'https://www.youtube-nocookie.com',
+            videoId: stepsData[0].yt,
+            playerVars: { 'autoplay': 0, 'controls': 0, 'enablejsapi': 1, 'playsinline': 1 },
+            events: { 'onReady': () => { isApiReady = true; } }
+        });
+    };
+
+    function syncUI() {
+        const data = stepsData[currentStep];
+        const bgElement = document.getElementById('main-bg');
+        const imgUrl = `https://images.unsplash.com/photo-${data.img}?auto=format&fit=crop&w=1920&q=90`;
+        
+        bgElement.style.opacity = 0;
+        const tempImg = new Image();
+        tempImg.src = imgUrl;
+        tempImg.onload = () => {
+            bgElement.style.backgroundImage = `url('${imgUrl}')`;
+            bgElement.style.opacity = 1;
         };
+        
+        document.getElementById('quote').innerText = data.txt;
+        document.getElementById('youtube-link').innerText = data.song || "— 聽見遠方的旋律 —";
+        document.getElementById('youtube-link').href = `https://www.youtube.com/watch?v=${data.yt}`;
+        
+        let p = (currentStep >= 9) ? 8 : currentStep;
+        document.getElementById('water-level').style.height = (p * 12.5) + "%";
+        document.getElementById('liters').innerText = (p * 0.25).toFixed(2);
+    }
 
-        function syncUI() {
-            const data = stepsData[currentStep];
-            const bgElement = document.getElementById('main-bg');
-            const imgUrl = `https://images.unsplash.com/photo-${data.img}?auto=format&fit=crop&w=1920&q=90`;
-            bgElement.style.opacity = 0;
-            const tempImg = new Image();
-            tempImg.src = imgUrl;
-            tempImg.onload = () => {
-                bgElement.style.backgroundImage = `url('${imgUrl}')`;
-                bgElement.style.opacity = 1;
-            };
-            document.getElementById('quote').innerText = data.txt;
-            document.getElementById('youtube-link').innerText = data.song || "— 聽見遠方的旋律 —";
-            document.getElementById('youtube-link').href = `https://www.youtube.com/watch?v=${data.yt}`;
-            let p = (currentStep >= 9) ? 8 : currentStep;
-            document.getElementById('water-level').style.height = (p * 12.5) + "%";
-            document.getElementById('liters').innerText = (p * 0.25).toFixed(2);
-        }
+    document.getElementById('start-btn').addEventListener('click', function() {
+        document.getElementById('start-overlay').style.opacity = '0';
+        setTimeout(() => { document.getElementById('start-overlay').style.display = 'none'; }, 800);
+        
+        _sysLog("v_init", "s_0");
+        syncUI();
 
-        document.getElementById('start-btn').addEventListener('click', function() {
-            document.getElementById('start-overlay').style.opacity = '0';
-            setTimeout(() => { document.getElementById('start-overlay').style.display = 'none'; }, 800);
-            _sysLog("v_init", "s_0");
-            syncUI();
-            setTimeout(() => {
-                if (isApiReady && player) {
-                    player.loadVideoById(stepsData[0].yt);
-                    player.playVideo();
-                }
-            }, 200);
-        });
-
-        document.getElementById('drink-btn').addEventListener('click', () => {
-            if (currentStep < 9) {
-                currentStep++;
-                _sysLog("v_upd", "s_" + currentStep);
-                const data = stepsData[currentStep];
-                if (isApiReady && player && data.yt) {
-                    player.loadVideoById(data.yt);
-                    player.playVideo();
-                }
-                syncUI();
+        setTimeout(() => {
+            if (isApiReady && player) {
+                player.loadVideoById(stepsData[0].yt);
+                player.playVideo();
             }
-        });
+        }, 200);
+    });
 
-        document.getElementById('reset-trigger').addEventListener('click', () => { location.reload(); });
-    </script>
+    document.getElementById('drink-btn').addEventListener('click', () => {
+        if (currentStep < 9) {
+            currentStep++;
+            _sysLog("v_upd", "s_" + currentStep);
+            const data = stepsData[currentStep];
+            if (isApiReady && player && data.yt) {
+                player.loadVideoById(data.yt);
+                player.playVideo();
+            }
+            syncUI();
+        }
+    });
+
+    document.getElementById('reset-trigger').addEventListener('click', () => { location.reload(); });
+</script>
 </body>
 </html>
+
